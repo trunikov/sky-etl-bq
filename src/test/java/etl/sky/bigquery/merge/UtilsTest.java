@@ -5,19 +5,29 @@ import static org.testng.Assert.assertNotNull;
 
 import java.net.URISyntaxException;
 
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import com.google.cloud.storage.BlobId;
 
 public class UtilsTest {
 
-    @Test
-    public void testFromUrl() throws Exception {
-//        Utils.fromUrl("gs://skyetl-configs/etl_test_view.json");
-        BlobId bid = Utils.fromUrl("gs://backet1/file1.json");
+    @DataProvider(name = "gsUrls")
+    public Object[][] gsUrls() {
+        //@formatter:off
+        return new Object[][] {
+            { "gs://backet1/file1.json", "backet1", "file1.json" },
+            { "gs://skyetl-configs/etl_test_view.json", "skyetl-configs", "etl_test_view.json" }
+        };
+        //@formatter:on
+    }
+
+    @Test(dataProvider = "gsUrls")
+    public void testFromUrl(String url, String expectedBacket, String expectedName) throws Exception {
+        BlobId bid = Utils.fromUrl(url);
         assertNotNull(bid);
-        assertEquals(bid.getBucket(), "backet1");
-        assertEquals(bid.getName(), "file1.json");
+        assertEquals(bid.getBucket(), expectedBacket);
+        assertEquals(bid.getName(), expectedName);
     }
 
     @Test(expectedExceptions = { NullPointerException.class })

@@ -2,8 +2,11 @@ package etl.sky.bigquery.merge;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -16,16 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.cloud.bigquery.BigQuery;
-import com.google.cloud.bigquery.BigQueryOptions;
-import com.google.cloud.bigquery.FieldValueList;
-import com.google.cloud.bigquery.Job;
 import com.google.cloud.bigquery.JobException;
-import com.google.cloud.bigquery.JobId;
-import com.google.cloud.bigquery.JobInfo;
-import com.google.cloud.bigquery.QueryJobConfiguration;
-import com.google.cloud.bigquery.QueryResponse;
-import com.google.cloud.bigquery.TableResult;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageException;
@@ -38,15 +32,19 @@ public class Main {
 
     private final static Logger log = LoggerFactory.getLogger(Main.class);
 
-    private final static String CONFIG_CHARSET = "UTF-8";
-
     public static void main(String[] args) throws Exception {
         CommandLine commandLine = parseCommandLine(args);
         if (commandLine != null) {
             String batchId = commandLine.getOptionValue('b');
             String configFileUrl = commandLine.getOptionValue('c');
-            loadConfig(configFileUrl);
-            // doJob(configFileUrl, batchId);
+            //loadConfig(configFileUrl);
+            //@formatter:off
+            List<TaskConfig> tasksConfigs = Arrays.asList(
+                new TaskConfig(),
+                new TaskConfig()
+            );
+            //@formatter:on
+            executeTasks(tasksConfigs);
         }
     }
 
@@ -73,45 +71,24 @@ public class Main {
         }
     }
 
-    private static void loadConfig(String url) throws IOException, StorageException, URISyntaxException {
+    private static List<TaskConfig> loadConfig(String url) throws IOException, StorageException, URISyntaxException {
         BlobId configBlobId = Utils.fromUrl(url);
         Storage storage = StorageOptions.getDefaultInstance().getService();
         byte[] configBytes = storage.readAllBytes(configBlobId);
         ObjectMapper mapper = new ObjectMapper();
         TypeReference<List<TaskConfig>> tref = new TypeReference<List<TaskConfig>>() {};
-        List<TaskConfig> taskConfigs = (List<TaskConfig>) mapper.readValue(configBytes, tref);
-        System.out.println(taskConfigs);
+        List<TaskConfig> tasksConfigs = (List<TaskConfig>) mapper.readValue(configBytes, tref);
+System.out.println(tasksConfigs);
+        return tasksConfigs;
     }
 
-    private static void doJob(String configFileUrl, String batchId) throws JobException, InterruptedException {
-        QueryJobConfiguration queryConfig = QueryJobConfiguration
-                .newBuilder("SELECT * FROM " + "FROM `skyuk-uk-nowtv-bit-ecc-dev.test.transactions_2017` ")
-                // Use standard SQL syntax for queries.
-                // See: https://cloud.google.com/bigquery/sql-reference/
-                .setUseLegacySql(false).build();
-        BigQuery bigquery = BigQueryOptions.getDefaultInstance().getService();
-
-        // Create a job ID so that we can safely retry.
-        JobId jobId = JobId.of(UUID.randomUUID().toString());
-        Job queryJob = bigquery.create(JobInfo.newBuilder(queryConfig).setJobId(jobId).build());
-        if (queryJob == null) {
-            throw new RuntimeException("Job no longer exists");
-        } else if (queryJob.getStatus().getError() != null) {
-            // You can also look at queryJob.getStatus().getExecutionErrors() for all
-            // errors, not just the latest one.
-            throw new RuntimeException(queryJob.getStatus().getError().toString());
-        }
-
-        QueryResponse response = bigquery.getQueryResults(jobId);
-
-        TableResult result = queryJob.getQueryResults();
-
-        // Print all pages of the results.
-        for (FieldValueList row : result.iterateAll()) {
-            String url = row.get("url").getStringValue();
-            long viewCount = row.get("view_count").getLongValue();
-            System.out.printf("url: %s views: %d%n", url, viewCount);
-        }
+    private static void executeTasks(List<TaskConfig> tasksConfigs) throws JobException, InterruptedException {
+        List<Task> tasks = tasksConfigs.stream().map(tc -> {
+            return new Task();
+        }).collect(Collectors.toList());
+        ExecutorService executorService = Executors.newFixedThreadPool(5);
+        executorService.invokeAll(tasks);
+        executorService.shutdown();
     }
 
 }

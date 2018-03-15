@@ -26,7 +26,7 @@ public class Utils {
         if (url == null) {
             throw new NullPointerException("URL can't be null.");
         }
-        Pattern pattern = Pattern.compile("^\\s*gs:\\/\\/([\\da-zA-Z\\.-]+)/([\\da-zA-Z\\.-]+)$");
+        Pattern pattern = Pattern.compile("^\\s*gs:\\/\\/([\\da-zA-Z\\.\\-_]+)/([\\da-zA-Z\\.\\-_]+)$");
         Matcher matcher = pattern.matcher(url);
         if (matcher.matches() || matcher.groupCount() != 2) {
             String bucket = matcher.group(1);
