@@ -2,6 +2,7 @@ package etl.sky.bigquery.merge;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.cli.CommandLine;
@@ -10,7 +11,11 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.cloud.bigquery.BigQuery;
 import com.google.cloud.bigquery.BigQueryOptions;
 import com.google.cloud.bigquery.FieldValueList;
@@ -30,6 +35,8 @@ import com.google.cloud.storage.StorageOptions;
  * @author dmytro.trunykov@zorallabs.com
  */
 public class Main {
+
+    private final static Logger log = LoggerFactory.getLogger(Main.class);
 
     private final static String CONFIG_CHARSET = "UTF-8";
 
@@ -70,8 +77,10 @@ public class Main {
         BlobId configBlobId = Utils.fromUrl(url);
         Storage storage = StorageOptions.getDefaultInstance().getService();
         byte[] configBytes = storage.readAllBytes(configBlobId);
-        String configText = new String(configBytes, CONFIG_CHARSET);
-        System.out.printf("configText: %s", configText);
+        ObjectMapper mapper = new ObjectMapper();
+        TypeReference<List<TaskConfig>> tref = new TypeReference<List<TaskConfig>>() {};
+        List<TaskConfig> taskConfigs = (List<TaskConfig>) mapper.readValue(configBytes, tref);
+        System.out.println(taskConfigs);
     }
 
     private static void doJob(String configFileUrl, String batchId) throws JobException, InterruptedException {

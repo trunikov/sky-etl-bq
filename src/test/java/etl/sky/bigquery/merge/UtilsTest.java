@@ -13,6 +13,7 @@ public class UtilsTest {
 
     @Test
     public void testFromUrl() throws Exception {
+//        Utils.fromUrl("gs://skyetl-configs/etl_test_view.json");
         BlobId bid = Utils.fromUrl("gs://backet1/file1.json");
         assertNotNull(bid);
         assertEquals(bid.getBucket(), "backet1");
