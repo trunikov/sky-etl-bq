@@ -21,6 +21,7 @@
     <slf4j.version>1.7.25</slf4j.version>
     <jackson.version>2.9.4</jackson.version>
     <commons-cli.version>1.4</commons-cli.version>
+    <commons-lang3.version>3.7</commons-lang3.version>
     <gcp.bigquery.version>0.38.0-beta</gcp.bigquery.version>
     <gcp.storage.version>1.20.0</gcp.storage.version>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -162,13 +163,19 @@
       <artifactId>commons-cli</artifactId>
       <version>${commons-cli.version}</version>
     </dependency>
-    
+
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>${commons-lang3.version}</version>
+    </dependency>
+ 
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
       <version>${jackson.version}</version>
     </dependency>
-    
+
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
@@ -177,9 +184,8 @@
 
     <dependency>
       <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-jdk14</artifactId>
+      <artifactId>slf4j-log4j12</artifactId>
       <version>${slf4j.version}</version>
-      <scope>runtime</scope>
     </dependency>
 
     <dependency>

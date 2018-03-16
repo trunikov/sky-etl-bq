@@ -2,7 +2,6 @@ package etl.sky.bigquery.merge;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -14,8 +13,10 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,19 +33,49 @@ public class Main {
 
     private final static Logger log = LoggerFactory.getLogger(Main.class);
 
-    public static void main(String[] args) throws Exception {
-        CommandLine commandLine = parseCommandLine(args);
-        if (commandLine != null) {
-            String batchId = commandLine.getOptionValue('b');
-            String configFileUrl = commandLine.getOptionValue('c');
-            //loadConfig(configFileUrl);
-            //@formatter:off
-            List<TaskConfig> tasksConfigs = Arrays.asList(
-                new TaskConfig(),
-                new TaskConfig()
-            );
-            //@formatter:on
-            executeTasks(tasksConfigs);
+    public final static String MDC_KEY_BATCHID = "batchId";
+    public final static String MDC_KEY_JOBID = "jobId";
+
+    public static void main(String[] args) {
+        try {
+            CommandLine commandLine = parseCommandLine(args);
+            if (commandLine != null) {
+                String batchId = commandLine.getOptionValue('b');
+                String configFileUrl = commandLine.getOptionValue('c');
+                MDC.put(MDC_KEY_BATCHID, StringUtils.abbreviate(batchId, 16));
+                List<TaskConfig> tasksConfigs;
+                try {
+                    tasksConfigs = loadConfig(configFileUrl);
+                } catch (URISyntaxException e) {
+                    String errMsg = "Invalid URL to the configuration file: " + configFileUrl;
+                    if (log.isDebugEnabled()) {
+                        log.error(errMsg, e);
+                    } else {
+                        log.error(errMsg);
+                    }
+                    return;
+                } catch (StorageException e) {
+                    String errMsg = String.format("Reading of the configuration file (%s) failed: %s", configFileUrl,
+                            e.getMessage());
+                    if (log.isDebugEnabled()) {
+                        log.error(errMsg, e);
+                    } else {
+                        log.error(errMsg);
+                    }
+                    return;
+                } catch (IOException e) {
+                    String errMsg = "Failed to parse the configuration file: " + e.getMessage();
+                    if (log.isDebugEnabled()) {
+                        log.error(errMsg, e);
+                    } else {
+                        log.error(errMsg);
+                    }
+                    return;
+                }
+                executeTasks(batchId, tasksConfigs);
+            }
+        } catch (Exception e) {
+            log.error("Unexpected failure.", e);
         }
     }
 
@@ -63,7 +94,6 @@ public class Main {
             }
             return retVal;
         } catch (ParseException e) {
-            System.err.println(e.getMessage());
             HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp("mvn compile exec:java -Dexec.mainClass=etl.sky.bigquery.merge.Main "
                     + "-Dexec.args=\"<ARGS>\", where ARGS are:", options);
@@ -76,15 +106,17 @@ public class Main {
         Storage storage = StorageOptions.getDefaultInstance().getService();
         byte[] configBytes = storage.readAllBytes(configBlobId);
         ObjectMapper mapper = new ObjectMapper();
-        TypeReference<List<TaskConfig>> tref = new TypeReference<List<TaskConfig>>() {};
+        TypeReference<List<TaskConfig>> tref = new TypeReference<List<TaskConfig>>() {
+        };
+        @SuppressWarnings("unchecked")
         List<TaskConfig> tasksConfigs = (List<TaskConfig>) mapper.readValue(configBytes, tref);
-System.out.println(tasksConfigs);
         return tasksConfigs;
     }
 
-    private static void executeTasks(List<TaskConfig> tasksConfigs) throws JobException, InterruptedException {
+    private static void executeTasks(String batchId, List<TaskConfig> tasksConfigs)
+            throws JobException, InterruptedException {
         List<Task> tasks = tasksConfigs.stream().map(tc -> {
-            return new Task();
+            return Task.of(batchId, tc);
         }).collect(Collectors.toList());
         ExecutorService executorService = Executors.newFixedThreadPool(5);
         executorService.invokeAll(tasks);
