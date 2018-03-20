@@ -43,9 +43,9 @@ public class Main {
                 String batchId = commandLine.getOptionValue('b');
                 String configFileUrl = commandLine.getOptionValue('c');
                 MDC.put(MDC_KEY_BATCHID, StringUtils.abbreviate(batchId, 16));
-                List<TaskConfig> tasksConfigs;
                 try {
-                    tasksConfigs = loadConfig(configFileUrl);
+                    List<TaskConfig> tasksConfigs = loadConfig(configFileUrl);
+                    executeTasks(batchId, tasksConfigs);
                 } catch (URISyntaxException e) {
                     String errMsg = "Invalid URL to the configuration file: " + configFileUrl;
                     if (log.isDebugEnabled()) {
@@ -53,7 +53,7 @@ public class Main {
                     } else {
                         log.error(errMsg);
                     }
-                    return;
+                    System.exit(1);
                 } catch (StorageException e) {
                     String errMsg = String.format("Reading of the configuration file (%s) failed: %s", configFileUrl,
                             e.getMessage());
@@ -62,7 +62,7 @@ public class Main {
                     } else {
                         log.error(errMsg);
                     }
-                    return;
+                    System.exit(1);
                 } catch (IOException e) {
                     String errMsg = "Failed to parse the configuration file: " + e.getMessage();
                     if (log.isDebugEnabled()) {
@@ -70,12 +70,12 @@ public class Main {
                     } else {
                         log.error(errMsg);
                     }
-                    return;
+                    System.exit(1);
                 }
-                executeTasks(batchId, tasksConfigs);
             }
         } catch (Exception e) {
             log.error("Unexpected failure.", e);
+            System.exit(1);
         }
     }
 
