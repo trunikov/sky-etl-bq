@@ -2,12 +2,11 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>sky.etl</groupId>
   <artifactId>bq-merge</artifactId>
   <packaging>jar</packaging>
 
   <parent>
-    <groupId>sky.etl</groupId>
+    <groupId>com.zorallabs.sky.etl</groupId>
     <artifactId>bq</artifactId>
     <version>0.0.1</version>
   </parent>

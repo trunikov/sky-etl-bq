@@ -2,7 +2,7 @@
 
   <modelVersion>4.0.0</modelVersion>
   <version>0.0.1</version>
-  <groupId>sky.etl</groupId>
+  <groupId>com.zorallabs.sky.etl</groupId>
   <artifactId>bq</artifactId>
   <packaging>pom</packaging>
 
