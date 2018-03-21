@@ -11,7 +11,7 @@
     <version>0.0.1</version>
   </parent>
 
-  <name>Utility: DDL   -> Views</name>
+  <name>Utility '${project.artifactId}':  DDL   => Views</name>
   <description>
     The utility creates views in a BigQuery instance.
     The views are defined in an input configuration file.

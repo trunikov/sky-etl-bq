@@ -11,7 +11,7 @@
     <version>0.0.1</version>
   </parent>
 
-  <name>Utility: Views -> Tables</name>
+  <name>Utility '${project.artifactId}': Views => Tables</name>
   <description>
     The utility copies data from view(s) to table(s).
     The source view(s) and target table(s) are defined in an input configuration file.
