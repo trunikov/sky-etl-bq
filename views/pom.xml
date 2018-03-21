@@ -2,7 +2,7 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>view2table</artifactId>
+  <artifactId>ddl2views</artifactId>
   <packaging>jar</packaging>
 
   <parent>
@@ -11,10 +11,10 @@
     <version>0.0.1</version>
   </parent>
 
-  <name>Utility: Views -> Tables</name>
+  <name>Utility: DDL   -> Views</name>
   <description>
-    The utility copies data from view(s) to table(s).
-    The source view(s) and target table(s) are defined in an input configuration file.
+    The utility creates views in a BigQuery instance.
+    The views are defined in an input configuration file.
   </description>
 
   <build>
@@ -36,7 +36,7 @@
                 <!--  transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/ -->
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                   <manifestEntries>
-                    <Main-Class>etl.sky.bigquery.merge.Main</Main-Class>
+                    <Main-Class>etl.sky.bigquery.views.Main</Main-Class>
                   </manifestEntries>
                 </transformer>
               </transformers>
@@ -54,7 +54,7 @@
                 <!-- transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/ -->
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                   <manifestEntries>
-                    <Main-Class>etl.sky.bigquery.merge.Main</Main-Class>
+                    <Main-Class>etl.sky.bigquery.views.Main</Main-Class>
                   </manifestEntries>
                 </transformer>
               </transformers>
