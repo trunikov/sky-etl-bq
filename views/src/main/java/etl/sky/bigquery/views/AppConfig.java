@@ -26,7 +26,6 @@ public class AppConfig {
     private final int threadPoolSize;
 
     public AppConfig(String batchId, String projectId, String bucketName, int threadPoolSize) {
-        super();
         this.batchId = batchId;
         this.projectId = projectId;
         this.bucketName = bucketName;

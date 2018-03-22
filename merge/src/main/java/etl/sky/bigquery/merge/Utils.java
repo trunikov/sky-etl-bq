@@ -11,6 +11,8 @@ import com.google.cloud.storage.BlobId;
  */
 public class Utils {
 
+    private final static String PLACEHOLDER = "0000";
+
     /**
      * Parse URL to a file in Google Cloud Storage.
      * 
@@ -45,11 +47,13 @@ public class Utils {
             throw new NullPointerException("Mandatory input argument 'batchId' can't be null.");
         }
         pttrnSql = pttrnSql.trim();
-        int m = pttrnSql.indexOf(" 0000 ");
+        String sql;
+        int m = pttrnSql.indexOf(" " + PLACEHOLDER + " ");
         if (m == -1) {
-            throw new IllegalArgumentException("Invalid SQL pattern. The placeholder '0000' not found.");
+            sql = pttrnSql;
+        } else {
+            sql = pttrnSql.substring(0, m) + " '" + batchId + "' " + pttrnSql.substring(m + PLACEHOLDER.length() + 2);
         }
-        String sql = pttrnSql.substring(0, m) + " '" + batchId + "' " + pttrnSql.substring(m + 6);
         return sql;
     }
 
