@@ -16,19 +16,25 @@ public class AppConfig {
     private final String projectId;
 
     /**
-     * Name of a bucket with DDL files for views.
+     * Name of a bucket.
      */
     private final String bucketName;
+    
+    /**
+     * Name of a folder in the bucket.
+     */
+    private final String folderName;
 
     /**
      * How many threads can be used for parallel execution of task(s).
      */
     private final int threadPoolSize;
 
-    public AppConfig(String batchId, String projectId, String bucketName, int threadPoolSize) {
+    public AppConfig(String batchId, String projectId, String bucketName, String folderName, int threadPoolSize) {
         this.batchId = batchId;
         this.projectId = projectId;
         this.bucketName = bucketName;
+        this.folderName = folderName;
         this.threadPoolSize = threadPoolSize;
     }
 
@@ -44,10 +50,12 @@ public class AppConfig {
         return bucketName;
     }
 
+    public String getFolderName() {
+        return folderName;
+    }
+
     public int getThreadPoolSize() {
         return threadPoolSize;
     }
-
-    
 
 }

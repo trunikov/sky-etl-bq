@@ -1,5 +1,7 @@
 package etl.sky.bigquery.views;
 
+import java.net.URISyntaxException;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -7,6 +9,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -60,7 +63,7 @@ public class Main {
         }
     }
 
-    private static AppConfig parseCommandLine(String[] arguments) throws ParseException {
+    private static AppConfig parseCommandLine(String[] arguments) throws ParseException, URISyntaxException {
         CommandLineParser cmdLineParser = new DefaultParser();
         Options options = new Options();
         try {
@@ -93,8 +96,12 @@ public class Main {
                 throw new ParseException("Invalid value of a thread pool size " + threadPoolSize
                         + ". Expected an integer in a range " + THREADPOOL_SIZE_MIN + ".." + THREADPOOL_SIZE_MAX + ".");
             }
-            return new AppConfig(cmdLine.getOptionValue(OPT_BATCHID), cmdLine.getOptionValue(OPT_PROJECTID),
-                    cmdLine.getOptionValue(OPT_BACKET), threadPoolSize);
+            String gsUrl = cmdLine.getOptionValue(OPT_BACKET);
+            Pair<String, String> parsedUrl = Utils.fromUrl(gsUrl);
+            String backetName = parsedUrl.getLeft();
+            String folderName = parsedUrl.getRight();
+            return new AppConfig(cmdLine.getOptionValue(OPT_BATCHID), cmdLine.getOptionValue(OPT_PROJECTID), backetName,
+                    folderName, threadPoolSize);
         } catch (ParseException e) {
             log.error(e.getMessage());
             HelpFormatter formatter = new HelpFormatter();
