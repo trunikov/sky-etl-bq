@@ -24,6 +24,7 @@ public class Main {
     private final static Logger log = LoggerFactory.getLogger(Main.class);
 
     private final static String MDC_KEY_BATCHID = "batchId";
+    final static String MDC_KEY_JOBID = "jobId";
 
     private final static String OPT_BATCHID = "b";
     private final static String OPT_BATCHID_LONG = "batchId";

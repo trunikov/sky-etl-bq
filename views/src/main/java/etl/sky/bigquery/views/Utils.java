@@ -54,4 +54,46 @@ public class Utils {
         }
     }
 
+    /**
+     * Parse passed filename and split it on 'dataset name' and 'view name'.
+     * 
+     * This utility expects that input files have names in a predefined form:
+     * 
+     * <code>
+     *   [any characters][/]<dataset name>.<view name>.[<any chars>]
+     * </code>
+     * 
+     * This function parses a passed filename and returns a pair in a form (<dataset name>, <view name>).
+     * 
+     * @param blobName
+     * @return a pair in a form (<dataset name>, <view name>)
+     * @throws NullPointerException
+     *             when an input argument 'filename' is null
+     * @throws IllegalArgumentException
+     *             when an input argument can't be parsed
+     */
+    public static Pair<String, String> parseBlobName(String blobName) {
+        if (blobName == null) {
+            throw new NullPointerException("Parameter 'filename' can't be null.");
+        }
+        int p1 = blobName.indexOf('.');
+        if (p1 == -1) {
+            throw new IllegalArgumentException(
+                    "The filename can't be parsed. Name of a dataset not found: " + blobName);
+        }
+        int p0 = blobName.lastIndexOf('/', p1);
+        int p2 = blobName.indexOf('.', p1 + 1);
+        if (p2 == -1) {
+            throw new IllegalArgumentException("The filename can't be parsed. Name of a view not found: " + blobName);
+        }
+        String datasetName;
+        if (p0 > p1) {
+            datasetName = blobName.substring(0, p1);
+        } else {
+            datasetName = blobName.substring(p0 + 1, p1);
+        }
+        String viewName = blobName.substring(p1 + 1, p2);
+        return Pair.of(datasetName, viewName);
+    }
+
 }
