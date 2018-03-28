@@ -50,8 +50,7 @@ public class Utils {
         String sql;
         int m = pttrnSql.indexOf(" " + PLACEHOLDER + " ");
         if (m == -1) {
-            //sql = pttrnSql;
-            throw new IllegalArgumentException("Placeholder not found: " + pttrnSql);
+            sql = pttrnSql;
         } else {
             sql = pttrnSql.substring(0, m) + " '" + batchId + "' " + pttrnSql.substring(m + PLACEHOLDER.length() + 2);
         }

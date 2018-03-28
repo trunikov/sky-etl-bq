@@ -58,9 +58,11 @@ public class UtilsTest {
         Utils.preparePttrnSql("foo", null);
     }
 
-    @Test(expectedExceptions = { IllegalArgumentException.class })
-    public void testPrepareSqlInvalidPttrn() {
-        Utils.preparePttrnSql("SELECT a.* FROM [ETL_VIEW.etl_test_view] a", "foo");
+    @Test
+    public void testPrepareSqlNoBatchId() {
+        String s = Utils.preparePttrnSql("SELECT a.* FROM [ETL_VIEW.etl_test_view] a", "foo");
+        assertNotNull(s);
+        assertEquals(s, "SELECT a.* FROM [ETL_VIEW.etl_test_view] a");
     }
 
 }

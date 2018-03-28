@@ -110,6 +110,7 @@ public class Main {
             return new AppConfig(cmdLine.getOptionValue(OPT_BATCHID), cmdLine.getOptionValue(OPT_CONFIGFILE),
                     threadPoolSize);
         } catch (ParseException e) {
+            log.error("Invalid command line: " + e.getMessage());
             HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp("java -jar view2table.jar <ARGS>", options);
             return null;
