@@ -101,7 +101,7 @@ public class Task implements Callable<Void> {
             return null;
         } catch(Exception e) {
             failed = true;
-            log.error("Unexpected failure.", e);
+            log.error("Unexpected failure of the task: " + toString(), e);
             return null;
         } finally {
             if (failed) {

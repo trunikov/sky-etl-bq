@@ -64,7 +64,7 @@ public class Task implements Callable<Void> {
             return null;
         } catch (Exception e) {
             failed = true;
-            log.error("Unexpected failure.", e);
+            log.error("Unexpected failure in the task: " + toString(), e);
             return null;
         } finally {
             if (failed) {
@@ -74,6 +74,11 @@ public class Task implements Callable<Void> {
                 log.info("The task completed as succeded.");
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Task [datasetName=" + datasetName + ", viewName=" + viewName + ", viewQuery=" + viewQuery + "]";
     }
 
 }

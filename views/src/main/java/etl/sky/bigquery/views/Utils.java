@@ -20,15 +20,7 @@ public class Utils {
         if (projectId == null) {
             throw new NullPointerException("Mandatory input argument 'projectId' can't be null.");
         }
-        pttrnSql = pttrnSql.trim();
-        String sql;
-        int m = pttrnSql.indexOf("`" + PLACEHOLDER + ".");
-        if (m == -1) {
-            sql = pttrnSql;
-        } else {
-            sql = pttrnSql.substring(0, m) + "`" + projectId + "." + pttrnSql.substring(m + PLACEHOLDER.length() + 2);
-        }
-        return sql;
+        return pttrnSql.replace("`" + PLACEHOLDER + ".", "`" + projectId + ".");
     }
 
     /**
