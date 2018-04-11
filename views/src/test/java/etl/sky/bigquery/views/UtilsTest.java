@@ -3,6 +3,8 @@ package etl.sky.bigquery.views;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
+import java.net.URISyntaxException;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -111,6 +113,21 @@ public class UtilsTest {
     @Test(dataProvider = "dataProviderParseFilename")
     public void testParseBlobName(String filename, Pair<String, String> expected) {
         Pair<String, String> result = Utils.parseBlobName(filename);
+        assertEquals(result, expected);
+    }
+ 
+    @DataProvider(name = "dataProviderFromUrl")
+    private Object[][] dataProviderFromUrl() {
+        //@formatter:off
+        return new Object[][] {
+            new Object[] { "gs://etl_system/view_configs/ddl", Pair.of("etl_system", "view_configs/ddl") }
+        };
+        //@formatter:on
+    }
+   
+    @Test(dataProvider = "dataProviderFromUrl")
+    public void testFromUrl(String url, Pair<String, String> expected) throws URISyntaxException {
+        Pair<String, String> result = Utils.fromUrl(url);
         assertEquals(result, expected);
     }
 
