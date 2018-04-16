@@ -8,6 +8,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.cloud.bigquery.JobException;
@@ -20,6 +23,8 @@ import com.google.cloud.storage.StorageOptions;
  * @author dmytro.trunykov@zorallabs.com
  */
 public class App implements Callable<Void> {
+
+    private final Logger log = LoggerFactory.getLogger(App.class);
 
     private final AppConfig opts;
 
@@ -46,9 +51,9 @@ public class App implements Callable<Void> {
         return tasksConfigs;
     }
 
-    private void executeTasks(String batchId, List<TaskConfig> tasksConfigs)
-            throws JobException, InterruptedException {
+    private void executeTasks(String batchId, List<TaskConfig> tasksConfigs) throws JobException, InterruptedException {
         List<Task> tasks = tasksConfigs.stream().map(tc -> {
+            log.info("A task is being created for the config: {}", tc);
             return Task.of(batchId, tc);
         }).collect(Collectors.toList());
         ExecutorService executorService = Executors.newFixedThreadPool(opts.getThreadPoolSize());

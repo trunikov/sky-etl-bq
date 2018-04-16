@@ -85,4 +85,11 @@ public class TaskConfig {
         this.writeDisposition = writeDisposition;
     }
 
+    @Override
+    public String toString() {
+        return "TaskConfig [jobType=" + jobType + ", jobOrder=" + jobOrder + ", dataSet=" + dataSet + ", tableName="
+                + tableName + ", sqlPttrn=" + sqlPttrn + ", createDisposition=" + createDisposition
+                + ", writeDisposition=" + writeDisposition + "]";
+    }
+
 }
